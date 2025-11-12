@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import { Mail, Lock, Copy, AlertCircle, CheckCircle, RefreshCw, Users, Loader, UserPlus, Edit, Save, X, Plus, Trash2 } from 'lucide-react'
 import { createUserWithEmail, generatePassword, getRecentUsers, copyToClipboard, updateUserProfile, getUserProfile, addEmailToAddedEmail, getAllAddedEmails } from '../lib/userService'
@@ -351,281 +350,281 @@ export function UserManagement() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Create User Form */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Create New User</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Create New User</h2>
 
-          {/* Message Display */}
-          {message && (
-            <div className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
-              message.type === 'success' 
-                ? 'bg-green-50 border border-green-200 text-green-800'
-                : 'bg-red-50 border border-red-200 text-red-800'
-            }`}>
-              {message.type === 'success' ? (
-                <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              ) : (
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              )}
-              <p className="text-sm">{message.text}</p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <input
-                  id="email"
-                  type="email"
-                  value={userFormData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  onBlur={() => handleFieldBlur('email')}
-                  placeholder="user@example.com"
-                  className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    emailError ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-              </div>
-              {emailError && (
-                <p className="mt-1 text-sm text-red-600">{emailError}</p>
-              )}
-            </div>
-
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="first_name"
-                  type="text"
-                  value={userFormData.first_name}
-                  onChange={(e) => handleInputChange('first_name', e.target.value)}
-                  onBlur={() => handleFieldBlur('first_name')}
-                  placeholder="John"
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    firstNameError ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {firstNameError && (
-                  <p className="mt-1 text-sm text-red-600">{firstNameError}</p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="last_name"
-                  type="text"
-                  value={userFormData.last_name}
-                  onChange={(e) => handleInputChange('last_name', e.target.value)}
-                  onBlur={() => handleFieldBlur('last_name')}
-                  placeholder="Doe"
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    lastNameError ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                {lastNameError && (
-                  <p className="mt-1 text-sm text-red-600">{lastNameError}</p>
-                )}
-              </div>
-            </div>
-
-            {/* Phone and Role Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  id="phone_number"
-                  type="tel"
-                  value={userFormData.phone_number}
-                  onChange={(e) => handleInputChange('phone_number', e.target.value)}
-                  placeholder="+1 (555) 123-4567"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-                  Role
-                </label>
-                <select
-                  id="role"
-                  value={userFormData.role}
-                  onChange={(e) => handleInputChange('role', e.target.value as 'Learner' | 'Parent' | 'Tutor' | 'Other')}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="Learner">Learner</option>
-                  <option value="Parent">Parent</option>
-                  <option value="Tutor">Tutor</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Password Options */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">
-                Password Options
-              </label>
-              
-              {/* Auto-generate option */}
-              <div className="mb-4">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="passwordOption"
-                    value="auto"
-                    checked={passwordOption === 'auto'}
-                    onChange={() => {
-                      setPasswordOption('auto')
-                      if (!generatedPassword) {
-                        handleGeneratePassword()
-                      }
-                    }}
-                    className="mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <span className="text-gray-900 font-medium">Auto-generate password</span>
-                    <p className="text-gray-600 text-sm mt-1">Create a secure random password</p>
-                    
-                    {passwordOption === 'auto' && generatedPassword && (
-                      <div className="mt-3">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 font-mono text-sm">
-                            {generatedPassword}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleCopyPassword}
-                            className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
-                          >
-                            <Copy className="w-4 h-4" />
-                            <span>{copiedPassword ? 'Copied!' : 'Copy'}</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleGeneratePassword}
-                            className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
-                          >
-                            <RefreshCw className="w-4 h-4" />
-                            <span>Regenerate</span>
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </label>
-              </div>
-              {/* Custom password option */}
-              <div className="mb-0">
-                <label className="flex items-start space-x-3 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="passwordOption"
-                    value="custom"
-                    checked={passwordOption === 'custom'}
-                    onChange={() => setPasswordOption('custom')}
-                    className="mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <span className="text-gray-900 font-medium">Custom password</span>
-                    <p className="text-gray-600 text-sm mt-1">Set your own password</p>
-                    
-                    {passwordOption === 'custom' && (
-                      <div className="mt-3">
-                        <div className="relative">
-                          <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
-                          <input
-                            type="password"
-                            value={customPassword}
-                            onChange={(e) => setCustomPassword(e.target.value)}
-                            onBlur={() => handleFieldBlur('customPassword')}
-                            placeholder="Enter password"
-                            className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                              customPasswordError ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                          />
-                        </div>
-                        {customPasswordError && (
-                          <p className="mt-1 text-sm text-red-600">{customPasswordError}</p>
-                        )}
-                        <p className="text-xs text-gray-500 mt-1">
-                          Minimum 6 characters
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </label>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <div>
-              <button
-                type="submit"
-                disabled={loading || !canSubmit}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
-              >
-                {loading ? (
-                  <>
-                    <Loader className="w-4 h-4 animate-spin" />
-                    <span>Creating User...</span>
-                  </>
+            {/* Message Display */}
+            {message && (
+              <div className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
+                message.type === 'success' 
+                  ? 'bg-green-50 border border-green-200 text-green-800'
+                  : 'bg-red-50 border border-red-200 text-red-800'
+              }`}>
+                {message.type === 'success' ? (
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 ) : (
-                  <span>Add User</span>
+                  <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                 )}
-              </button>
-              {submitted && !canSubmit && (
-                <p className="mt-2 text-sm text-red-600 text-center">
-                  Please fix the form errors before submitting
-                </p>
-              )}
-            </div>
-          </form>
-        </div>
+                <p className="text-sm">{message.text}</p>
+              </div>
+            )}
 
-        {/* Recent Users Sidebar */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Recently Created Users</h2>
-          
-          {recentUsers.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-              <p>No users created yet</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {recentUsers.map((user) => (
-                <div key={user.id} className="bg-gray-50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-gray-500" />
-                      <span className="font-medium text-gray-900 truncate">{user.email}</span>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                  <input
+                    id="email"
+                    type="email"
+                    value={userFormData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onBlur={() => handleFieldBlur('email')}
+                    placeholder="user@example.com"
+                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      emailError ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                </div>
+                {emailError && (
+                  <p className="mt-1 text-sm text-red-600">{emailError}</p>
+                )}
+              </div>
+
+              {/* Name Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="first_name"
+                    type="text"
+                    value={userFormData.first_name}
+                    onChange={(e) => handleInputChange('first_name', e.target.value)}
+                    onBlur={() => handleFieldBlur('first_name')}
+                    placeholder="John"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      firstNameError ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {firstNameError && (
+                    <p className="mt-1 text-sm text-red-600">{firstNameError}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="last_name"
+                    type="text"
+                    value={userFormData.last_name}
+                    onChange={(e) => handleInputChange('last_name', e.target.value)}
+                    onBlur={() => handleFieldBlur('last_name')}
+                    placeholder="Doe"
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                      lastNameError ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  />
+                  {lastNameError && (
+                    <p className="mt-1 text-sm text-red-600">{lastNameError}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Phone and Role Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone_number"
+                    type="tel"
+                    value={userFormData.phone_number}
+                    onChange={(e) => handleInputChange('phone_number', e.target.value)}
+                    placeholder="+1 (555) 123-4567"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                    Role
+                  </label>
+                  <select
+                    id="role"
+                    value={userFormData.role}
+                    onChange={(e) => handleInputChange('role', e.target.value as 'Learner' | 'Parent' | 'Tutor' | 'Other')}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="Learner">Learner</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Tutor">Tutor</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Password Options */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-4">
+                  Password Options
+                </label>
+                
+                {/* Auto-generate option */}
+                <div className="mb-4">
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="passwordOption"
+                      value="auto"
+                      checked={passwordOption === 'auto'}
+                      onChange={() => {
+                        setPasswordOption('auto')
+                        if (!generatedPassword) {
+                          handleGeneratePassword()
+                        }
+                      }}
+                      className="mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <span className="text-gray-900 font-medium">Auto-generate password</span>
+                      <p className="text-gray-600 text-sm mt-1">Create a secure random password</p>
+                      
+                      {passwordOption === 'auto' && generatedPassword && (
+                        <div className="mt-3">
+                          <div className="flex items-center space-x-3">
+                            <div className="flex-1 bg-gray-50 border border-gray-300 rounded px-3 py-2 font-mono text-sm">
+                              {generatedPassword}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleCopyPassword}
+                              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+                            >
+                              <Copy className="w-4 h-4" />
+                              <span>{copiedPassword ? 'Copied!' : 'Copy'}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleGeneratePassword}
+                              className="flex items-center space-x-2 px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                              <span>Regenerate</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+                
+                {/* Custom password option */}
+                <div className="mb-0">
+                  <label className="flex items-start space-x-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="passwordOption"
+                      value="custom"
+                      checked={passwordOption === 'custom'}
+                      onChange={() => setPasswordOption('custom')}
+                      className="mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <span className="text-gray-900 font-medium">Custom password</span>
+                      <p className="text-gray-600 text-sm mt-1">Set your own password</p>
+                      
+                      {passwordOption === 'custom' && (
+                        <div className="mt-3">
+                          <div className="relative">
+                            <Lock className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+                            <input
+                              type="password"
+                              value={customPassword}
+                              onChange={(e) => setCustomPassword(e.target.value)}
+                              onBlur={() => handleFieldBlur('customPassword')}
+                              placeholder="Enter password"
+                              className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                                customPasswordError ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                            />
+                          </div>
+                          {customPasswordError && (
+                            <p className="mt-1 text-sm text-red-600">{customPasswordError}</p>
+                          )}
+                          <p className="text-xs text-gray-500 mt-1">
+                            Minimum 6 characters
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading || !canSubmit}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Creating User...</span>
+                    </>
+                  ) : (
+                    <span>Add User</span>
+                  )}
+                </button>
+                {submitted && !canSubmit && (
+                  <p className="mt-2 text-sm text-red-600 text-center">
+                    Please fix the form errors before submitting
+                  </p>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* Recent Users Sidebar */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Recently Created Users</h2>
+            
+            {recentUsers.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p>No users created yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentUsers.map((user) => (
+                  <div key={user.id} className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Mail className="w-4 h-4 text-gray-500" />
+                        <span className="font-medium text-gray-900 truncate">{user.email}</span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Created {new Date(user.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-500">
-                    Created {new Date(user.created_at).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </>
       ) : activeTab === 'profiles' ? (
         /* Profile Management Tab */
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -799,7 +798,7 @@ export function UserManagement() {
           {message && (
             <div className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
               message.type === 'success'
-                ? 'bg-green-50 border border-green-200 text-green-800'
+                ?'bg-green-50 border border-green-200 text-green-800'
                 : 'bg-red-50 border border-red-200 text-red-800'
             }`}>
               {message.type === 'success' ? (
@@ -809,131 +808,111 @@ export function UserManagement() {
               )}
               <p className="text-sm">{message.text}</p>
             </div>
-          )} 
+          )}
 
           {/* Add Email Form */}
-          <div className="mb-8 bg-gray-50 rounded-lg p-6">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Email</h3>
-            <form onSubmit={handleAddEmail} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="add-email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="add-email"
-                  type="email"
-                  value={addEmailForm.email}
-                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="user@example.com"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+            <form onSubmit={handleAddEmail} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label htmlFor="add_email" className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="add_email"
+                    type="email"
+                    value={addEmailForm.email}
+                    onChange={(e) => setAddEmailForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="user@example.com"
+                    required
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="add_first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                    First Name
+                  </label>
+                  <input
+                    id="add_first_name"
+                    type="text"
+                    value={addEmailForm.first_name}
+                    onChange={(e) => setAddEmailForm(prev => ({ ...prev, first_name: e.target.value }))}
+                    placeholder="John"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="add_last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Last Name
+                  </label>
+                  <input
+                    id="add_last_name"
+                    type="text"
+                    value={addEmailForm.last_name}
+                    onChange={(e) => setAddEmailForm(prev => ({ ...prev, last_name: e.target.value }))}
+                    placeholder="Doe"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
               </div>
-              <div>
-                <label htmlFor="add-first-name" className="block text-sm font-medium text-gray-700 mb-1">
-                  First Name
-                </label>
-                <input
-                  id="add-first-name"
-                  type="text"
-                  value={addEmailForm.first_name}
-                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, first_name: e.target.value }))}
-                  placeholder="John"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label htmlFor="add-last-name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Last Name
-                </label>
-                <input
-                  id="add-last-name"
-                  type="text"
-                  value={addEmailForm.last_name}
-                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, last_name: e.target.value }))}
-                  placeholder="Doe"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div className="md:col-span-3">
-                <button
-                  type="submit"
-                  disabled={addingEmail || !addEmailForm.email}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors flex items-center space-x-2"
-                >
-                  {addingEmail ? (
-                    <>
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span>Adding Email...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4" />
-                      <span>Add Email</span>
-                    </>
-                  )}
-                </button>
-                {!addEmailForm.email && (
-                  <p className="mt-2 text-sm text-gray-500">
-                    Enter an email address to add to the tracking system
-                  </p>
+              <button
+                type="submit"
+                disabled={addingEmail || !addEmailForm.email}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {addingEmail ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    <span>Adding...</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    <span>Add Email</span>
+                  </>
                 )}
-              </div>
+              </button>
             </form>
           </div>
 
-          {/* Email List */}
-          <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Tracked Emails</h3>
-            
-            {loadingAddedEmails ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader className="w-6 h-6 animate-spin text-blue-600" />
-                <span className="ml-2 text-gray-600">Loading emails...</span>
-              </div>
-            ) : addedEmails.length === 0 ? (
-              <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
-                <Mail className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                <h4 className="text-lg font-medium text-gray-900 mb-2">No emails tracked yet</h4>
-                <p className="text-gray-500 mb-4">Add emails above to start tracking contacts</p>
-              </div>
-            ) : (
-              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-700">
-                    <div>Email</div>
-                    <div>First Name</div>
-                    <div>Last Name</div>
-                    <div>Added By</div>
-                    <div>Date Added</div>
-                  </div>
-                </div>
-                <div className="divide-y divide-gray-200">
-                  {addedEmails.map((addedEmail) => (
-                    <div key={addedEmail.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
-                      <div className="grid grid-cols-5 gap-4 text-sm text-gray-700">
-                        <div className="font-medium truncate" title={addedEmail.email}>
-                          {addedEmail.email}
-                        </div>
-                        <div className="truncate" title={addedEmail.first_name || 'N/A'}>
-                          {addedEmail.first_name || 'N/A'}
-                        </div>
-                        <div className="truncate" title={addedEmail.last_name || 'N/A'}>
-                          {addedEmail.last_name || 'N/A'}
-                        </div>
-                        <div className="font-mono text-xs text-gray-500 truncate">
-                          {addedEmail.created_by || 'System'}
-                        </div>
-                        <div className="text-gray-500">
-                          {addedEmail.created_at ? new Date(addedEmail.created_at).toLocaleDateString() : 'N/A'}
-                        </div>
+          {/* Added Emails List */}
+          {loadingAddedEmails ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader className="w-6 h-6 animate-spin text-blue-600" />
+              <span className="ml-2 text-gray-600">Loading emails...</span>
+            </div>
+          ) : addedEmails.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Mail className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+              <p>No emails added yet</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {addedEmails.map((emailEntry) => (
+                <div key={emailEntry.id} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">
+                          {emailEntry.first_name && emailEntry.last_name
+                            ? `${emailEntry.first_name} ${emailEntry.last_name}`
+                            : emailEntry.email}
+                        </h3>
+                        <p className="text-sm text-gray-600">{emailEntry.email}</p>
                       </div>
                     </div>
-                  ))}
+                    <div className="text-sm text-gray-500">
+                      Added {emailEntry.created_at ? new Date(emailEntry.created_at).toLocaleDateString() : 'Unknown'}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
