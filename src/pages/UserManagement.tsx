@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react'
-import { Mail, Lock, Copy, AlertCircle, CheckCircle, RefreshCw, Users, Loader, UserPlus, Edit, Save, X } from 'lucide-react'
-import { createUserWithEmail, generatePassword, getRecentUsers, copyToClipboard, updateUserProfile, getUserProfile } from '../lib/userService'
+import { Mail, Lock, Copy, AlertCircle, CheckCircle, RefreshCw, Users, Loader, UserPlus, Edit, Save, X, Plus, Trash2 } from 'lucide-react'
+import { createUserWithEmail, generatePassword, getRecentUsers, copyToClipboard, updateUserProfile, getUserProfile, addEmailToAddedEmail, getAllAddedEmails } from '../lib/userService'
 import { Profile } from '../types/database'
+import { AddedEmail } from '../lib/userService'
 
 interface UserData {
   id: string
@@ -19,7 +20,7 @@ interface CreateUserFormData {
 }
 
 export function UserManagement() {
-  const [activeTab, setActiveTab] = useState<'create' | 'profiles'>('create')
+  const [activeTab, setActiveTab] = useState<'create' | 'profiles' | 'addedEmails'>('create')
   
   // Create User Form States
   const [userFormData, setUserFormData] = useState<CreateUserFormData>({
@@ -42,6 +43,16 @@ export function UserManagement() {
   const [loadingProfiles, setLoadingProfiles] = useState(false)
   const [editingProfile, setEditingProfile] = useState<string | null>(null)
   const [editProfileData, setEditProfileData] = useState<Partial<Profile>>({})
+  
+  // AddedEmail Management States
+  const [addedEmails, setAddedEmails] = useState<AddedEmail[]>([])
+  const [loadingAddedEmails, setLoadingAddedEmails] = useState(false)
+  const [addEmailForm, setAddEmailForm] = useState({
+    email: '',
+    first_name: '',
+    last_name: ''
+  })
+  const [addingEmail, setAddingEmail] = useState(false)
   
   const [touched, setTouched] = useState({ 
     email: false, 
@@ -79,8 +90,11 @@ export function UserManagement() {
   useEffect(() => {
     handleGeneratePassword()
     fetchRecentUsers()
+    
     if (activeTab === 'profiles') {
       fetchProfiles()
+    } else if (activeTab === 'addedEmails') {
+      fetchAddedEmails()
     }
   }, [activeTab])
 
@@ -218,6 +232,52 @@ export function UserManagement() {
     }
   }
 
+  const fetchAddedEmails = async () => {
+    setLoadingAddedEmails(true)
+    try {
+      const emailsData = await getAllAddedEmails()
+      setAddedEmails(emailsData || [])
+    } catch (error) {
+      console.error('Error fetching added emails:', error)
+    } finally {
+      setLoadingAddedEmails(false)
+    }
+  }
+
+  const handleAddEmail = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddingEmail(true)
+    
+    try {
+      const result = await addEmailToAddedEmail(
+        addEmailForm.email,
+        addEmailForm.first_name,
+        addEmailForm.last_name
+      )
+      
+      if (result.success) {
+        setMessage({
+          text: `Email ${addEmailForm.email} added successfully to AddedEmail table!`,
+          type: 'success'
+        })
+        setAddEmailForm({ email: '', first_name: '', last_name: '' })
+        await fetchAddedEmails()
+      } else {
+        setMessage({
+          text: result.error || 'Failed to add email to AddedEmail table',
+          type: 'error'
+        })
+      }
+    } catch (error) {
+      setMessage({
+        text: error instanceof Error ? error.message : 'Failed to add email',
+        type: 'error'
+      })
+    } finally {
+      setAddingEmail(false)
+    }
+  }
+
   const handleCancelEdit = () => {
     setEditingProfile(null)
     setEditProfileData({})
@@ -267,6 +327,19 @@ export function UserManagement() {
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4" />
                 <span>Manage Profiles</span>
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('addedEmails')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'addedEmails'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center space-x-2">
+                <Mail className="w-4 h-4" />
+                <span>Added Emails</span>
               </div>
             </button>
           </nav>
@@ -552,7 +625,8 @@ export function UserManagement() {
           )}
           </div>
         </div>
-      ) : (
+      </>
+      ) : activeTab === 'profiles' ? (
         /* Profile Management Tab */
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Management</h2>
@@ -709,6 +783,157 @@ export function UserManagement() {
               ))}
             </div>
           )}
+        </div>
+      ) : (
+        /* Added Emails Tab */
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">Added Emails Management</h2>
+            <div className="flex items-center space-x-2 text-gray-600">
+              <Mail className="w-5 h-5" />
+              <span>{addedEmails.length} emails tracked</span>
+            </div>
+          </div>
+          
+          {/* Message Display */}
+          {message && (
+            <div className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
+              message.type === 'success'
+                ? 'bg-green-50 border border-green-200 text-green-800'
+                : 'bg-red-50 border border-red-200 text-red-800'
+            }`}>
+              {message.type === 'success' ? (
+                <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              ) : (
+                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              )}
+              <p className="text-sm">{message.text}</p>
+            </div>
+          )} 
+
+          {/* Add Email Form */}
+          <div className="mb-8 bg-gray-50 rounded-lg p-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Email</h3>
+            <form onSubmit={handleAddEmail} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label htmlFor="add-email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="add-email"
+                  type="email"
+                  value={addEmailForm.email}
+                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="user@example.com"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label htmlFor="add-first-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  First Name
+                </label>
+                <input
+                  id="add-first-name"
+                  type="text"
+                  value={addEmailForm.first_name}
+                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, first_name: e.target.value }))}
+                  placeholder="John"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label htmlFor="add-last-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Last Name
+                </label>
+                <input
+                  id="add-last-name"
+                  type="text"
+                  value={addEmailForm.last_name}
+                  onChange={(e) => setAddEmailForm(prev => ({ ...prev, last_name: e.target.value }))}
+                  placeholder="Doe"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="md:col-span-3">
+                <button
+                  type="submit"
+                  disabled={addingEmail || !addEmailForm.email}
+                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-md transition-colors flex items-center space-x-2"
+                >
+                  {addingEmail ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Adding Email...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      <span>Add Email</span>
+                    </>
+                  )}
+                </button>
+                {!addEmailForm.email && (
+                  <p className="mt-2 text-sm text-gray-500">
+                    Enter an email address to add to the tracking system
+                  </p>
+                )}
+              </div>
+            </form>
+          </div>
+
+          {/* Email List */}
+          <div>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Tracked Emails</h3>
+            
+            {loadingAddedEmails ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader className="w-6 h-6 animate-spin text-blue-600" />
+                <span className="ml-2 text-gray-600">Loading emails...</span>
+              </div>
+            ) : addedEmails.length === 0 ? (
+              <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
+                <Mail className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                <h4 className="text-lg font-medium text-gray-900 mb-2">No emails tracked yet</h4>
+                <p className="text-gray-500 mb-4">Add emails above to start tracking contacts</p>
+              </div>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
+                  <div className="grid grid-cols-5 gap-4 text-sm font-medium text-gray-700">
+                    <div>Email</div>
+                    <div>First Name</div>
+                    <div>Last Name</div>
+                    <div>Added By</div>
+                    <div>Date Added</div>
+                  </div>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {addedEmails.map((addedEmail) => (
+                    <div key={addedEmail.id} className="px-4 py-3 hover:bg-gray-50 transition-colors">
+                      <div className="grid grid-cols-5 gap-4 text-sm text-gray-700">
+                        <div className="font-medium truncate" title={addedEmail.email}>
+                          {addedEmail.email}
+                        </div>
+                        <div className="truncate" title={addedEmail.first_name || 'N/A'}>
+                          {addedEmail.first_name || 'N/A'}
+                        </div>
+                        <div className="truncate" title={addedEmail.last_name || 'N/A'}>
+                          {addedEmail.last_name || 'N/A'}
+                        </div>
+                        <div className="font-mono text-xs text-gray-500 truncate">
+                          {addedEmail.created_by || 'System'}
+                        </div>
+                        <div className="text-gray-500">
+                          {addedEmail.created_at ? new Date(addedEmail.created_at).toLocaleDateString() : 'N/A'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -11,6 +11,15 @@ interface UserData {
   created_at: string
 }
 
+export interface AddedEmail {
+  id: number
+  email: string
+  first_name?: string | null
+  last_name?: string | null
+  created_by?: string | null
+  created_at?: string
+  updated_at?: string
+}
 
 
 // Generate a random secure password
@@ -213,6 +222,61 @@ export async function updateUserProfile(profileId: string, profileData: any): Pr
   } catch (error) {
     console.error('❌ Error in updateUserProfile:', error)
     throw error
+  }
+}
+
+// Add email to AddedEmail table
+export async function addEmailToAddedEmail(email: string, firstName?: string, lastName?: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log('📝 Adding email to AddedEmail:', email)
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    const addedEmailData = {
+      email: email.toLowerCase(),
+      first_name: firstName || null,
+      last_name: lastName || null,
+      created_by: user?.id || null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    const { error } = await supabase
+      .from('AddedEmail')
+      .insert(addedEmailData)
+
+    if (error) {
+      console.error('❌ Error adding to AddedEmail:', error)
+      return { success: false, error: error.message }
+    }
+
+    console.log('✅ Email added to AddedEmail successfully')
+    return { success: true }
+  } catch (error: any) {
+    console.error('❌ Error in addEmailToAddedEmail:', error)
+    return { success: false, error: error.message }
+  }
+}
+
+// Get all added emails
+export async function getAllAddedEmails(): Promise<AddedEmail[]> {
+  try {
+    console.log('📝 Fetching all added emails...')
+    
+    const { data: addedEmails, error } = await supabaseAdmin
+      .from('AddedEmail')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('❌ Error fetching added emails:', error)
+      throw error
+    }
+
+    console.log(`✅ Retrieved ${addedEmails?.length || 0} added emails`)
+    return addedEmails || []
+  } catch (error) {
+    console.error('❌ Error in getAllAddedEmails:', error)
+    return []
   }
 }
 
